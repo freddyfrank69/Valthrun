@@ -247,7 +247,11 @@ pub struct AppSettings {
     pub aimbot_fov: f32,
 
     #[serde(default = "default_f32::<150, 100>")]
-    pub aimbot_speed: f32,
+    pub aimbot_speed_x: f32,
+
+    #[serde(default = "default_f32::<150, 100>")]
+    pub aimbot_speed_y: f32;
+
 
     #[serde(default = "default_aim_bone")]
     pub aim_bone: String,

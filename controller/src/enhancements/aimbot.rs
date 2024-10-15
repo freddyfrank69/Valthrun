@@ -16,19 +16,22 @@ use valthrun_kernel_interface::MouseState;
 pub struct Aimbot {
     toggle: KeyToggle,
     fov: f32,
-    aim_speed: f32,
+    aim_speed_x: f32,
+    aim_speed_y: f32,
     is_active: bool,
-    current_target: Option<[f32; 2]>,  
+    current_target: Option<[f32; 2]>,
     aim_bone: String,
     aimbot_team_check: bool,
 }
+
 
 impl Aimbot {
     pub fn new() -> Self {
         Self {
             toggle: KeyToggle::new(),
             fov: 3.0,
-            aim_speed: 2.5,
+            aim_speed_x: 2.5,
+            aim_speed_y: 2.5,
             is_active: false,
             current_target: None,
             aim_bone: "head".to_string(),
@@ -104,29 +107,33 @@ impl Aimbot {
     fn aim_at_target(&self, ctx: &UpdateContext, target_screen_position: [f32; 2]) -> anyhow::Result<bool> {
         let view = ctx.states.resolve::<ViewController>(())?;
         let crosshair_pos = [view.screen_bounds.x / 2.0, view.screen_bounds.y / 2.0];
+    
         let aim_adjustment = [
-            (target_screen_position[0] - crosshair_pos[0]) / self.aim_speed,
-            (target_screen_position[1] - crosshair_pos[1]) / self.aim_speed,
+            (target_screen_position[0] - crosshair_pos[0]) / self.aim_speed_x,
+            (target_screen_position[1] - crosshair_pos[1]) / self.aim_speed_y,
         ];
-
+    
         ctx.cs2.send_mouse_state(&[MouseState {
             last_x: aim_adjustment[0] as i32,
             last_y: aim_adjustment[1] as i32,
             ..Default::default()
         }])?;
+    
         Ok(true)
     }
+    
 }
 
 impl Enhancement for Aimbot {
     fn update(&mut self, ctx: &UpdateContext) -> anyhow::Result<()> {
         let settings = ctx.states.resolve::<AppSettings>(())?;
-
+    
         self.fov = settings.aimbot_fov;
-        self.aim_speed = settings.aimbot_speed;
+        self.aim_speed_x = settings.aimbot_speed_x;
+        self.aim_speed_y = settings.aimbot_speed_y;
         self.aim_bone = settings.aim_bone.to_lowercase();
         self.aimbot_team_check = settings.aimbot_team_check;
-
+    
         if self.toggle.update_dual(
             &settings.aimbot_mode,
             ctx.input,
@@ -138,7 +145,7 @@ impl Enhancement for Aimbot {
                 &format!("enabled: {}, mode: {:?}", self.toggle.enabled, settings.aimbot_mode),
             );
         }
-
+    
         if self.toggle.enabled {
             if let Some(target_screen_position) = self.find_best_target(ctx) {
                 self.aim_at_target(ctx, target_screen_position)?;
@@ -146,7 +153,7 @@ impl Enhancement for Aimbot {
                 self.current_target = None;
             }
         }
-
+    
         Ok(())
     }
 
