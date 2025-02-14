@@ -23,8 +23,8 @@ pub struct Aimbot {
     aim_bone: String,
 
     aimbot_team_check: bool,
-    aimbot_last_mouse_move: Instant,     // Timestamp of the last mouse movement
-    aimbot_current_target: Option<[f32; 3]>, // Current target coordinates (x, y, z)
+    aimbot_last_mouse_move: Instant,
+    aimbot_current_target: Option<[f32; 3]>,
     aimbot_is_mouse_pressed: bool,
 
     aimbot_is_active: bool,   
