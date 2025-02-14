@@ -3,4 +3,4 @@
 	url = https://github.com/WolverinDEV/valthrun-driver.git
 [submodule "driver/protocol"]
 	path = driver/protocol
-	url = https://github.com/Valthrun/valthrun-driver-protocol
+	url = https://github.com/Valthrun/valthrun-driver-protocol.git
